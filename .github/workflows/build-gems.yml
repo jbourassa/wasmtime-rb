@@ -49,6 +49,10 @@ jobs:
         with:
           platform: ${{ matrix.ruby-platform }}
           ruby-versions: ${{ join(fromJSON(needs.ci-data.outputs.result).stable-ruby-versions, ',') }}
+        continue-on-error: true
+
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
 
       - uses: actions/upload-artifact@v4
         with:
