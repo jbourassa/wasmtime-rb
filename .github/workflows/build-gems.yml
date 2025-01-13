@@ -44,7 +44,7 @@ jobs:
         with:
           ruby-version: "3.3" # Debugging w/ 3.3
 
-      - uses: oxidize-rb/actions/cross-gem@v1
+      - uses: oxidize-rb/actions/cross-gem@try-out-pid-host
         id: cross-gem
         with:
           platform: ${{ matrix.ruby-platform }}
