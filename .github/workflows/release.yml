@@ -44,7 +44,7 @@ jobs:
         with:
           ruby-version: "3.4"
 
-      - uses: oxidize-rb/actions/cross-gem@v1
+      - uses: oxidize-rb/actions/cross-gem@try-out-pid-host
         id: cross-gem
         with:
           platform: ${{ matrix.ruby-platform }}
@@ -84,44 +84,53 @@ jobs:
       - name: Package source gem
         run: bundle exec rake pkg:ruby
 
-      - name: Ensure version matches the tag
+      - name: Debug built gems
         run: |
-          GEM_VERSION=$(grep VERSION lib/wasmtime/version.rb | head -n 1 | cut -d'"' -f2)
-          if [ "v$GEM_VERSION" != "${{ github.ref_name }}" ]; then
-            echo "Gem version does not match tag"
-            echo "  v$GEM_VERSION != ${{ github.ref_name }}"
-            exit 1
-          fi
-
-      - name: Push Gem
-        working-directory: pkg/
-        env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_KEY }}
-        run: |
-          mkdir -p $HOME/.gem
-          touch $HOME/.gem/credentials
-          chmod 0600 $HOME/.gem/credentials
-          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
           ls -l
           for i in *.gem; do
             if [ -f "$i" ]; then
-              if ! gem push "$i" >push.out; then
-                gemerr=$?
-                sed 's/^/::error:: /' push.out
-                if ! grep -q "Repushing of gem" push.out; then
-                  exit $gemerr
-                fi
-              fi
+              echo "gem version would be pushed:$i"
             fi
           done
 
-      - name: Create GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          generateReleaseNotes: true
-          draft: true
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-          skipIfReleaseExists: true
+      # - name: Ensure version matches the tag
+      #   run: |
+      #     GEM_VERSION=$(grep VERSION lib/wasmtime/version.rb | head -n 1 | cut -d'"' -f2)
+      #     if [ "v$GEM_VERSION" != "${{ github.ref_name }}" ]; then
+      #       echo "Gem version does not match tag"
+      #       echo "  v$GEM_VERSION != ${{ github.ref_name }}"
+      #       exit 1
+      #     fi
+      #
+      # - name: Push Gem
+      #   working-directory: pkg/
+      #   env:
+      #     GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_KEY }}
+      #   run: |
+      #     mkdir -p $HOME/.gem
+      #     touch $HOME/.gem/credentials
+      #     chmod 0600 $HOME/.gem/credentials
+      #     printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+      #     ls -l
+      #     for i in *.gem; do
+      #       if [ -f "$i" ]; then
+      #         if ! gem push "$i" >push.out; then
+      #           gemerr=$?
+      #           sed 's/^/::error:: /' push.out
+      #           if ! grep -q "Repushing of gem" push.out; then
+      #             exit $gemerr
+      #           fi
+      #         fi
+      #       fi
+      #     done
+      #
+      # - name: Create GitHub release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     allowUpdates: true
+      #     generateReleaseNotes: true
+      #     draft: true
+      #     omitBodyDuringUpdate: true
+      #     omitNameDuringUpdate: true
+      #     omitPrereleaseDuringUpdate: true
+      #     skipIfReleaseExists: true
