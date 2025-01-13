@@ -42,7 +42,7 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3" # Debugging w/ 3.3
+          ruby-version: "3.4"
 
       - uses: oxidize-rb/actions/cross-gem@try-out-pid-host
         id: cross-gem
